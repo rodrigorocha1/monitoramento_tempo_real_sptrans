@@ -17,12 +17,16 @@ class KafkaProdutor:
         )
 
     def criar_topico(self, topico: str, numero_particoes: int):
-        novo_topico = NewTopic(
-            name=topico,
-            num_partitions=numero_particoes,
-            replication_factor=1
-        )
-        self.__admin_cliente.create_topics([novo_topico])
+        try:
+            novo_topico = NewTopic(
+                name=topico,
+                num_partitions=numero_particoes,
+                replication_factor=1
+            )
+            self.__admin_cliente.create_topics([novo_topico])
+
+        except:
+            pass
 
     def verificar_particoes(self, topico: str) -> int:
         particoes = self.__admin_cliente.describe_topics([topico])
@@ -35,3 +39,4 @@ class KafkaProdutor:
             key=chave,
             partition=particao
         )
+        self.__produtor.flush()

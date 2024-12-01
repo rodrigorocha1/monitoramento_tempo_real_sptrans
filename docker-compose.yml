@@ -1,0 +1,9 @@
+services:
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    network_mode: "host"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-kafka
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: localhost:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: localhost:2181

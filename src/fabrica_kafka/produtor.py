@@ -1,9 +1,18 @@
-from fabrica_kafka.kafka_consumidor import KafkaConsumidor
+from src.service.sptrans_api import SptransAPI
 from fabrica_kafka.kafka_produtor import KafkaProdutor
 from random import randint
 from datetime import datetime
 from time import sleep
 import os
+
+
+class Produtor:
+
+    def __init__(self):
+        self.__kp = KafkaProdutor(
+            bootstrap_servers=os.environ['URL_KAFKA']
+        )
+        self.__api_sptrans = SptransAPI()
 
 
 def sensor(nome: str):

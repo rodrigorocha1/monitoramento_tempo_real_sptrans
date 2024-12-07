@@ -39,9 +39,10 @@ class SptransAPI:
         return response.json()['vs']
 
 
-sptransapi = SptransAPI()
-linhas = sptransapi.buscar_dados_linha(codigo_linha='2678-10')
-for linha in linhas:
-    print()
-    print(sptransapi.buscar_posicao_linha(codigo_interno_linha=linha))
-    print()
+if __name__ == "__main__":
+    sptransapi = SptransAPI()
+    linhas = sptransapi.buscar_dados_linha(codigo_linha='2678-10')
+    for linha in linhas:
+        print()
+        print(sptransapi.buscar_posicao_linha(codigo_interno_linha=linha))
+        print()

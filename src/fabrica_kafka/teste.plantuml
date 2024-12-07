@@ -1,0 +1,42 @@
+@startuml
+
+!define RECTANGLE "rectangle"
+!define ARROW_RIGHT -->
+
+' Producers
+rectangle "Producer 1" as P1
+rectangle "Producer 2" as P2
+
+' Kafka Cluster
+cloud "Kafka Cluster" as CLUSTER {
+    rectangle "Broker 1" as B1
+    rectangle "Broker 2" as B2
+    rectangle "Broker 3" as B3
+    folder "Topic A" as TOPIC {
+        rectangle "Partition 1" as PART1
+        rectangle "Partition 2" as PART2
+    }
+}
+
+' Consumers
+rectangle "Consumer 1" as C1
+rectangle "Consumer 2" as C2
+
+' Connectors (Optional)
+database "External System" as ES
+rectangle "Kafka Connect" as KCONNECT
+
+' Streams (Optional)
+rectangle "Kafka Streams" as STREAMS
+
+' Relationships
+P1 ARROW_RIGHT TOPIC : Send Data
+P2 ARROW_RIGHT TOPIC : Send Data
+TOPIC ARROW_RIGHT C1 : Read Data
+TOPIC ARROW_RIGHT C2 : Read Data
+TOPIC ARROW_RIGHT STREAMS : Process Data
+STREAMS ARROW_RIGHT C1 : Processed Data
+TOPIC ARROW_RIGHT KCONNECT : Data Integration
+KCONNECT ARROW_RIGHT ES : Export Data
+
+@enduml

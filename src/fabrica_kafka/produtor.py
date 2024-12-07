@@ -14,27 +14,22 @@ class Produtor:
         )
         self.__api_sptrans = SptransAPI()
 
+    def rodar_produtor(self, codigo_linha='2678-10'):
+        while True:
+            linhas = self.__api_sptrans.buscar_dados_linha(
+                codigo_linha=codigo_linha)
+            for linha in linhas:
+                topico = f'linha_{linha}'
+                posicoes = self.__api_sptrans.buscar_posicao_linha(
+                    codigo_interno_linha=linha)
+                total_particoes = len(posicoes)
 
-def sensor(nome: str):
-    return {
-        'nome_sensor': nome,
-        'temperatura': randint(0, 100),
-        'data_hora_temperatura': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    }
-
-
-kp = KafkaProdutor(
-    bootstrap_servers=os.environ['URL_KAFKA']
-)
-while True:
-    sensor_um = sensor('sensor_um')
-    topico = 'temperatura_sensor_um'
-    kp.criar_topico(topico=topico, numero_particoes=1)
-    total_particoes = kp.verificar_particoes(topico=topico)
-    kp.enviar_dados(
-        chave='temperatura_sensor_um_chave',
-        particao=0,
-        dados=sensor_um,
-        topico=topico
-    )
-    sleep(3)
+                self.__kp.criar_topico(
+                    topico=topico, numero_particoes=total_particoes)
+                for posicao in posicoes:
+                    self.__kp.enviar_dados(
+                        topico=topico,
+                        particao=total_particoes,
+                        chave=posicao['p'],
+                        dados=posicao
+                    )

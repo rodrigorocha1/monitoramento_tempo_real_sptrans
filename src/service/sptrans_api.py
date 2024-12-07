@@ -44,5 +44,8 @@ if __name__ == "__main__":
     linhas = sptransapi.buscar_dados_linha(codigo_linha='2678-10')
     for linha in linhas:
         print()
-        print(sptransapi.buscar_posicao_linha(codigo_interno_linha=linha))
-        print()
+
+        print(linha)
+        print(len(sptransapi.buscar_posicao_linha(codigo_interno_linha=linha)))
+        for posicao in sptransapi.buscar_posicao_linha(codigo_interno_linha=linha):
+            print(posicao)

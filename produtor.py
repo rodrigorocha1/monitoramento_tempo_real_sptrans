@@ -48,6 +48,7 @@ class Produtor:
                     chave=posicao['p'],
                     dados=posicao
                 )
+            sleep(3)
 
 
 if __name__ == '__main__':

@@ -33,6 +33,7 @@ class KafkaProdutor:
         return len(particoes[0]['partitions'])
 
     def enviar_dados(self, topico: str, dados: Dict, chave: str, particao: int):
+
         self.__produtor.send(
             topic=topico,
             value=dados,

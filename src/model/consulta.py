@@ -19,7 +19,7 @@ class Consulta:
             r.route_color as route_color,
             r.route_text_color as route_text_color
         from rotas r
-        where route_id = ?
+        where r.route_id = ?
 
         """
 
@@ -53,7 +53,7 @@ class Consulta:
 
         parametros = (linha, )
         tipos = {
-            'shape_id': 'string',
+            'shape_id': 'int64',
         }
         try:
             dataframe = pd.read_sql_query(
@@ -68,22 +68,21 @@ class Consulta:
 
         return dataframe['shape_id'].to_list()
 
-    def consultar_trajeto(self, shape_id: Tuple[str, str] = '1012-10'):
+    def consultar_trajeto(self, shape_id):
         sql = """
             SELECT shape_pt_lat lat,
                 shape_pt_lon lon
             FROM trajetos
-            where shape_id in ?
+            WHERE shape_id IN ({})
+        """.format(','.join(['?'] * len(shape_id)))
+        parametros = tuple(shape_id)
 
-
-        """
-
-        parametros = (shape_id, )
         tipos = {
-            'shape_id': 'string',
+            'lat': 'float64',
+            'lon': 'float64'
         }
         try:
-            dataframe = pd.read_sql_query(
+            dataframe = dataframe = pd.read_sql_query(
                 sql=sql,
                 con=self.__db.obter_conexao(),
                 params=parametros,

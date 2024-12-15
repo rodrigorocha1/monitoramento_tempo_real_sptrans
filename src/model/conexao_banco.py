@@ -14,7 +14,7 @@ class ConexaoBancoDuckDb:
             'dados',
             'rrrochaa_gtfs'
         )
-        self.__DATABASE_URL = 'duckdb:////' + self.__CAMINHO_BANCO
+        self.__DATABASE_URL = 'duckdb:///' + self.__CAMINHO_BANCO
         self.__conexao = create_engine(
             self.__DATABASE_URL,
             echo=False

@@ -1,20 +1,29 @@
 from kafka import KafkaProducer, KafkaAdminClient
 from kafka.admin import NewTopic
 import json
-from typing import Dict
+from typing import Dict, List
+import os
 
 
 class KafkaProdutor:
-    def __init__(self, bootstrap_servers: str):
+    def __init__(self):
+        self.__url = os.environ['URL_KAFKA']
         self.__produtor = KafkaProducer(
-            bootstrap_servers=bootstrap_servers,
+            bootstrap_servers=self.__url,
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),
             key_serializer=lambda k: k.encode('utf-8')
         )
 
         self.__admin_cliente = KafkaAdminClient(
-            bootstrap_servers=bootstrap_servers
+            bootstrap_servers=self.__url
         )
+
+    def listar_topicos(self) -> List[str]:
+        return self.__admin_cliente.list_topics()
+
+    def apagar_topicos(self, nome_topico: str):
+
+        self.__admin_cliente.delete_topics([nome_topico])
 
     def criar_topico(self, topico: str, numero_particoes: int):
         try:

@@ -12,7 +12,8 @@ class ConexaoBancoDuckDb:
         self.__CAMINHO_BANCO = os.path.join(
             self.__CAMINHO_RAIZ,
             'dados',
-            'rrrochaa_gtfs'
+            'rrrochaa_gtfs',
+            'gptrs.duckdb'
         )
         self.__DATABASE_URL = 'duckdb:///' + self.__CAMINHO_BANCO
         self.__conexao = create_engine(

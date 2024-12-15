@@ -19,7 +19,10 @@ class DashboardMapa:
             st.session_state["topicos_processados"] = []
 
     def listar_inputs(self):
-        topico = st.text_input('Digite o nome do tópico')
+        topico = st.text_input(
+            'Digite o nome do tópico',
+            placeholder='Ex: 1012-10'
+        )
 
         botao = st.button(
             'Cadastrar tópico - Linha'
@@ -45,12 +48,16 @@ class DashboardMapa:
             ).add_to(st.session_state["mapa_dados"])
             st.session_state["topicos_processados"].append(topico)
 
-        if st.session_state["mapa_dados"]:
-            st_folium(
-                st.session_state["mapa_dados"],
-                width=1900,
-                height=1500
-            )
+        col_um, col_dois = st.columns([0.70, 0.30])
+        with col_um:
+            if st.session_state["mapa_dados"]:
+                st_folium(
+                    st.session_state["mapa_dados"],
+                    width=1900,
+                    height=1500
+                )
+        with col_dois:
+            pass
 
     def rodar_dashboard(self):
         self.listar_inputs()

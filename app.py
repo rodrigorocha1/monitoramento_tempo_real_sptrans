@@ -1,4 +1,4 @@
-from src.dashboard_mapa import DashboardMapa
+from src.view.dashboard_mapa import DashboardMapa
 
 
 dm = DashboardMapa()

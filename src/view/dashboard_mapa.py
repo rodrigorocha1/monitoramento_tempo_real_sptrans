@@ -1,8 +1,10 @@
 import streamlit as st
 from src.fabrica_kafka.kafka_produtor import KafkaProdutor
+from src.service.sptrans_api import SptransAPI
 from src.controller.controller import Controller
 import folium
 from streamlit_folium import st_folium
+from time import sleep
 
 
 class DashboardMapa:
@@ -12,6 +14,8 @@ class DashboardMapa:
             layout='wide'
         )
         self.__controller = Controller()
+        self.__consumidor = KafkaProdutor()
+        self.__service_api = SptransAPI()
 
         if "mapas" not in st.session_state:
             st.session_state["mapas"] = {}
@@ -50,6 +54,33 @@ class DashboardMapa:
 
             st.session_state["topicos_processados"].append(topico)
             return topico
+
+    def gerar_produtor(self, codigo_linha: str):
+        linhas = self.__service_api.buscar_dados_linha(
+            codigo_linha=codigo_linha)
+
+        posicoes = self.__service_api.buscar_posicao_linha(
+            codigos_interno_linha=linhas)
+
+        topico = f'linha_{codigo_linha}'
+        self.__consumidor.criar_topico(
+            topico=topico, numero_particoes=len(posicoes))
+
+        while True:
+
+            linhas = self.__service_api.buscar_dados_linha(
+                codigo_linha=codigo_linha)
+            posicoes = self.__service_api.buscar_posicao_linha(
+                codigos_interno_linha=linhas)
+
+            for indice_particao, posicao in enumerate(posicoes):
+                self.__consumidor.enviar_dados(
+                    topico=topico,
+                    particao=indice_particao,
+                    chave=posicao['p'],
+                    dados=posicao
+                )
+            sleep(3)
 
     def gerar_mapa(self):
 

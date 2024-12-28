@@ -2,12 +2,12 @@ from kafka import KafkaProducer, KafkaAdminClient
 from kafka.admin import NewTopic
 import json
 from typing import Dict, List
-import os
+from config.config import URL_KAFKA
 
 
 class KafkaProdutor:
     def __init__(self):
-        self.__url = os.environ['URL_KAFKA']
+        self.__url = URL_KAFKA
         self.__produtor = KafkaProducer(
             bootstrap_servers=self.__url,
             value_serializer=lambda v: json.dumps(v).encode('utf-8'),

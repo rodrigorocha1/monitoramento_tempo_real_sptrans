@@ -1,14 +1,13 @@
 from typing import List
-from dotenv import load_dotenv
 import requests
 import os
-load_dotenv()
+from config.config import URL_API_SPTRANS, CHAVE_API_SPTRANS
 
 
 class SptransAPI:
     def __init__(self):
-        self.__chave = os.environ['API_SPTRANS_TOKEN']
-        self.__url_api = os.environ['URL_SPTRANS']
+        self.__chave = URL_API_SPTRANS
+        self.__url_api = CHAVE_API_SPTRANS
 
     def __gerar_autenticacao(self):
         requisicao = requests.post(

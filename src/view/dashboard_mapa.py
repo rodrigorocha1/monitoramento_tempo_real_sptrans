@@ -13,14 +13,14 @@ class DashboardMapa:
         )
         self.__controller = Controller()
 
-        if "mapa_dados" not in st.session_state:
-            st.session_state["mapa_dados"] = None
+        if "mapas" not in st.session_state:
+            st.session_state["mapas"] = {}
         if "topicos_processados" not in st.session_state:
             st.session_state["topicos_processados"] = []
 
     def listar_inputs(self):
         topico = st.text_input(
-            'Digite o nome do tópico',
+            'Digite o nome do tópico - Linha',
             placeholder='Ex: 1012-10'
         )
 
@@ -28,36 +28,40 @@ class DashboardMapa:
             'Cadastrar tópico - Linha'
         )
         if botao:
-
-            # if topico in st.session_state["topicos_processados"]:
-            #     st.warning("Este tópico já foi processado!")
-            #     return
+            if topico in st.session_state["topicos_processados"]:
+                st.warning("Este tópico já foi processado!")
+                return
 
             nome_completo_linha, cor_trajeto, cor_nome_linha, dataframe = self.__controller.gerar_dados_mapa(
                 linha=topico)
             coordenadas = dataframe[['lat', 'lon']].values.tolist()
+            print(cor_trajeto, cor_nome_linha)
 
-            if st.session_state["mapa_dados"] is None:
-                st.session_state["mapa_dados"] = folium.Map(
-                    location=[-23.5703934, -46.665128],
-                    zoom_start=13
-                )
+            novo_mapa = folium.Map(
+                location=[-23.5703934, -46.665128],
+                zoom_start=10
+            )
             folium.PolyLine(
                 coordenadas,
-                color='blue'
-            ).add_to(st.session_state["mapa_dados"])
+                color=f'#{cor_trajeto}'
+            ).add_to(novo_mapa)
+
+            st.session_state["mapas"][topico] = novo_mapa
+
             st.session_state["topicos_processados"].append(topico)
 
-        col_um, col_dois = st.columns([0.70, 0.30])
-        with col_um:
-            if st.session_state["mapa_dados"]:
-                st_folium(
-                    st.session_state["mapa_dados"],
-                    width=1900,
-                    height=1500
-                )
-        with col_dois:
-            pass
+        for topico, mapa in st.session_state["mapas"].items():
+            with st.container():
+                col1, col2 = st.columns([0.75, 0.25])
+                with col1:
+                    st.markdown(f"## Mapa para o tópico - Linha: {topico}")
+                    st_folium(
+                        mapa,
+                        width=1000,
+                        height=800
+                    )
+                with col2:
+                    st.write('Coluna 2')
 
     def rodar_dashboard(self):
         self.listar_inputs()

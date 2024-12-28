@@ -18,7 +18,7 @@ class DashboardMapa:
         if "topicos_processados" not in st.session_state:
             st.session_state["topicos_processados"] = []
 
-    def listar_inputs(self):
+    def gerar_input(self):
         topico = st.text_input(
             'Digite o nome do tópico - Linha',
             placeholder='Ex: 1012-10'
@@ -49,12 +49,16 @@ class DashboardMapa:
             st.session_state["mapas"][topico] = novo_mapa
 
             st.session_state["topicos_processados"].append(topico)
+            return topico
+
+    def gerar_mapa(self):
 
         for topico, mapa in st.session_state["mapas"].items():
             with st.container():
                 col1, col2 = st.columns([0.75, 0.25])
                 with col1:
-                    st.markdown(f"## Mapa para o tópico - Linha: {topico}")
+                    st.markdown(
+                        f"## Mapa para o tópico - Linha: {topico}")
                     st_folium(
                         mapa,
                         width=1000,
@@ -64,4 +68,5 @@ class DashboardMapa:
                     st.write('Coluna 2')
 
     def rodar_dashboard(self):
-        self.listar_inputs()
+        topico = self.gerar_input()
+        self.gerar_mapa()

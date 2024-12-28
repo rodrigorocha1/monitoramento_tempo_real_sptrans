@@ -2,7 +2,7 @@ from kafka import KafkaProducer, KafkaAdminClient
 from kafka.admin import NewTopic
 import json
 from typing import Dict, List
-from config.config import URL_KAFKA
+from src.config.config import URL_KAFKA
 
 
 class KafkaProdutor:

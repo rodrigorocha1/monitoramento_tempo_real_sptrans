@@ -1,15 +1,12 @@
 from src.service.sptrans_api import SptransAPI
 from src.fabrica_kafka.kafka_produtor import KafkaProdutor
 from time import sleep
-import os
 
 
 class Produtor:
 
     def __init__(self):
-        self.__kp = KafkaProdutor(
-            bootstrap_servers=os.environ['URL_KAFKA']
-        )
+        self.__kp = KafkaProdutor()
         self.__api_sptrans = SptransAPI()
 
     def enviar_linhas_kafka(self, codigo_linha: str, indice: int, topico: str):

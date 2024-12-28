@@ -1,13 +1,13 @@
 from typing import List
 import requests
 import os
-from config.config import URL_API_SPTRANS, CHAVE_API_SPTRANS
+from src.config.config import URL_API_SPTRANS, CHAVE_API_SPTRANS
 
 
 class SptransAPI:
     def __init__(self):
-        self.__chave = URL_API_SPTRANS
-        self.__url_api = CHAVE_API_SPTRANS
+        self.__chave = CHAVE_API_SPTRANS
+        self.__url_api = URL_API_SPTRANS
 
     def __gerar_autenticacao(self):
         requisicao = requests.post(

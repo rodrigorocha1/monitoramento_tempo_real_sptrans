@@ -1,5 +1,6 @@
 import streamlit as st
 from src.fabrica_kafka.kafka_produtor import KafkaProdutor
+from src.fabrica_kafka.kafka_consumidor import KafkaConsumidor
 from src.service.sptrans_api import SptransAPI
 from src.controller.controller import Controller
 import folium
@@ -14,8 +15,9 @@ class DashboardMapa:
             layout='wide'
         )
         self.__controller = Controller()
-        self.__consumidor = KafkaProdutor()
+        self._produtor = KafkaProdutor()
         self.__service_api = SptransAPI()
+        self.__consumidor = KafkaConsumidor(group_id='linhas_onibus')
 
         if "mapas" not in st.session_state:
             st.session_state["mapas"] = {}
@@ -63,7 +65,7 @@ class DashboardMapa:
             codigos_interno_linha=linhas)
 
         topico = f'linha_{codigo_linha}'
-        self.__consumidor.criar_topico(
+        self._produtor.criar_topico(
             topico=topico, numero_particoes=len(posicoes))
 
         while True:
@@ -74,7 +76,7 @@ class DashboardMapa:
                 codigos_interno_linha=linhas)
 
             for indice_particao, posicao in enumerate(posicoes):
-                self.__consumidor.enviar_dados(
+                self._produtor.enviar_dados(
                     topico=topico,
                     particao=indice_particao,
                     chave=posicao['p'],
@@ -82,22 +84,29 @@ class DashboardMapa:
                 )
             sleep(3)
 
-    def gerar_mapa(self):
+    def gerar_mapa_consumidor(self, topico: str):
+        consumidor = self.__consumidor
+        consumidor.topico = topico
+        mensagens_container = st.empty()
 
-        for topico, mapa in st.session_state["mapas"].items():
-            with st.container():
-                col1, col2 = st.columns([0.75, 0.25])
-                with col1:
-                    st.markdown(
-                        f"## Mapa para o tópico - Linha: {topico}")
-                    st_folium(
-                        mapa,
-                        width=1000,
-                        height=800
-                    )
-                with col2:
-                    st.write('Coluna 2')
+        for mensagem in consumidor.consumir_mensagens():
+            valor = mensagem.value
+            mensagens_container.write(valor)
+            # if topico in st.session_state['mapas']:
+            #     mapa = st.session_state['mapas'][topico]
+            #     folium.Marker(
+            #         location=[-23.5703934, -46.665128],
+            #         popup=f'Exemplo'
+            #     ).add_to(mapa)
+            #     st.session_state['mapas'][topico] = mapa
+            #     st_folium(mapa, width=800, height=600)
 
     def rodar_dashboard(self):
         topico = self.gerar_input()
-        self.gerar_mapa()
+
+        # if st.session_state['mapas']:
+        #     for topico, mapa in st.session_state['mapas'].items():
+        #         st_folium(mapa, width=800, height=600)
+        # st.write("Mapas processados:", list(st.session_state["mapas"].keys()))
+        if topico is not None:
+            self.gerar_produtor(codigo_linha=topico)

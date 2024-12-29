@@ -84,32 +84,25 @@ class DashboardMapa:
     #         sleep(3)
 
     def gerar_mapa_consumidor(self):
-        st.title("Dashboard de Linhas de Ônibus")
+        mapa_sp = folium.Map(
+                location=[-23.5703934, -46.665128],
+                zoom_start=10
+            )
 
-        topicos = self._produtor.listar_topicos()
+        for mensagem in self.__consumidor.consumir_mensagens():
 
-        if not topicos:
-            st.write("Nenhum tópico disponível.")
-            return
+            posicoes = mensagem.value
+        
+            print(posicoes)
+        
+            folium.Marker(
+                    location=[posicoes['py'], posicoes['px']],
+                    popup=f'Ônibus: {posicoes["p"]}',
+                    icon=folium.Icon(color="blue", icon="info-sign")
+            ).add_to(mapa_sp)
+            st_folium(mapa_sp)
 
-        st.sidebar.title("Seleção de Linhas")
-        linha_selecionada = st.sidebar.selectbox(
-            "Escolha uma linha para visualizar",
-            topicos
-        )
-
-        consumidor = self.__consumidor
-        consumidor.group_id = f'group_posicoes_onibus'
-        consumidor.topico = 'posicoes_onibus'
-        mapa = folium.Map(
-            location=[-23.5703934, -46.665128],
-            zoom_start=12
-        )
-
-        with st.container():
-
-            for valor in consumidor.consumir_mensagens():
-                st.write(valor)
 
     def rodar_dashboard(self):
         self.gerar_mapa_consumidor()
+        

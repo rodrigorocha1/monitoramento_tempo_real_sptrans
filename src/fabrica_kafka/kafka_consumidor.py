@@ -7,9 +7,18 @@ load_dotenv()
 
 
 class KafkaConsumidor:
-    def __init__(self, group_id: str):
+    def __init__(self):
         self.__topico = None
         self.__consumer = None
+        self.__group_id = None
+
+    @property
+    def group_id(self):
+        return self.__group_id
+
+    @group_id.setter
+    def group_id(self, group_id):
+        self.__group_id = group_id
 
     @property
     def topico(self):
@@ -22,7 +31,7 @@ class KafkaConsumidor:
             self.__consumer = KafkaConsumer(
                 self.__topico,
                 bootstrap_servers=os.environ['URL_KAFKA'],
-                group_id='linhas',
+                group_id=self.__group_id,
                 value_deserializer=lambda x: json.loads(x.decode('utf-8')),
                 auto_offset_reset='latest',
                 enable_auto_commit=True

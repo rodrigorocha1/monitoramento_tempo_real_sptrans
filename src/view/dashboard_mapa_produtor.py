@@ -17,7 +17,6 @@ class DashboardMapa:
 
         self._produtor = KafkaProdutor()
         self.__service_api = SptransAPI()
-        self.__consumidor = KafkaConsumidor(group_id='linhas_onibus')
 
     def gerar_input(self):
         topico = st.text_input(
@@ -29,18 +28,20 @@ class DashboardMapa:
             'Cadastrar tópico - Linha'
         )
         if botao:
-            st.success(f'Tópico {topico} cadastrado com sucesso')
 
             return topico
 
     def gerar_produtor(self, codigo_linha: str):
         linhas = self.__service_api.buscar_dados_linha(
             codigo_linha=codigo_linha)
+        print(codigo_linha, linhas)
 
         posicoes = self.__service_api.buscar_posicao_linha(
             codigos_interno_linha=linhas)
+        print(codigo_linha, linhas, posicoes)
 
-        topico = f'linha_{codigo_linha}'
+        topico = f'posicoes_onibus'
+        print(codigo_linha, linhas, posicoes, topico)
         self._produtor.criar_topico(
             topico=topico, numero_particoes=len(posicoes))
 
@@ -60,8 +61,19 @@ class DashboardMapa:
                 )
             sleep(3)
 
+    def gerar_mapa_consumidor(self, topico: str):
+        consumidor = self.__consumidor
+        topico = f'linha_{topico}'
+        consumidor.topico = topico
+        mensagens_container = st.empty()
+
+        for mensagem in consumidor.consumir_mensagens():
+            valor = mensagem.value
+            st.write(valor)
+
     def rodar_dashboard(self):
         topico = self.gerar_input()
 
         if topico is not None:
             self.gerar_produtor(codigo_linha=topico)
+            st.success(f'Tópico {topico} cadastrado com sucesso')

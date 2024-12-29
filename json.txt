@@ -1,0 +1,113 @@
+{
+    "hr": "20:36",
+    "vs": [
+        {
+            "p": "32511",
+            "a": true,
+            "ta": "2024-12-28T23:35:36Z",
+            "py": -23.502257,
+            "px": -46.384414,
+            "sv": null,
+            "is": null
+        },
+        {
+            "p": "32503",
+            "a": true,
+            "ta": "2024-12-28T23:35:31Z",
+            "py": -23.49173,
+            "px": -46.44601225,
+            "sv": null,
+            "is": null
+        },
+        {
+            "p": "32512",
+            "a": true,
+            "ta": "2024-12-28T23:35:49Z",
+            "py": -23.492767125,
+            "px": -46.444301625000008,
+            "sv": null,
+            "is": null
+        },
+        {
+            "p": "32196",
+            "a": true,
+            "ta": "2024-12-28T23:35:47Z",
+            "py": -23.4941295,
+            "px": -46.3767385,
+            "sv": null,
+            "is": null
+        },
+        {
+            "p": "32190",
+            "a": true,
+            "ta": "2024-12-28T23:35:46Z",
+            "py": -23.535124,
+            "px": -46.5762615,
+            "sv": null,
+            "is": null
+        },
+        {
+            "p": "32518",
+            "a": true,
+            "ta": "2024-12-28T23:35:43Z",
+            "py": -23.521535999999998,
+            "px": -46.527848,
+            "sv": null,
+            "is": null
+        },
+        {
+            "p": "32520",
+            "a": true,
+            "ta": "2024-12-28T23:35:22Z",
+            "py": -23.547062,
+            "px": -46.630193000000006,
+            "sv": null,
+            "is": null
+        },
+        {
+            "p": "32188",
+            "a": true,
+            "ta": "2024-12-28T23:35:47Z",
+            "py": -23.5073265,
+            "px": -46.478872499999994,
+            "sv": null,
+            "is": null
+        }
+    ]
+}
+,
+
+
+
+def gerar_input(self):
+        topico = st.text_input(
+            'Digite o nome do tópico - Linha',
+            placeholder='Ex: 1012-10'
+        )
+
+        botao = st.button(
+            'Cadastrar tópico - Linha'
+        )
+        if botao:
+            if topico in st.session_state["topicos_processados"]:
+                st.warning("Este tópico já foi processado!")
+                return
+
+            nome_completo_linha, cor_trajeto, cor_nome_linha, dataframe = self.__controller.gerar_dados_mapa(
+                linha=topico)
+            coordenadas = dataframe[['lat', 'lon']].values.tolist()
+            print(cor_trajeto, cor_nome_linha)
+
+            novo_mapa = folium.Map(
+                location=[-23.5703934, -46.665128],
+                zoom_start=10
+            )
+            folium.PolyLine(
+                coordenadas,
+                color=f'#{cor_trajeto}'
+            ).add_to(novo_mapa)
+
+            st.session_state["mapas"][topico] = novo_mapa
+
+            st.session_state["topicos_processados"].append(topico)
+            return topico
